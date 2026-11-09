@@ -16,10 +16,18 @@ const server = Fastify({
   },
 });
 
-// Configure CORS for frontend access
+// Allowed origins restricted to the deployed Vercel frontend and local development
+const allowedOrigins = [
+  'https://test-form-three-mu.vercel.app',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+];
+
+// Configure CORS for frontend access (must be registered before routes)
 server.register(cors, {
-  origin: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   credentials: true,
 });
 
