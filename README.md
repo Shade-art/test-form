@@ -286,6 +286,29 @@ model Application {
 
 ---
 
+## ☁️ Deploying to Render
+
+### 1. Backend (Web Service)
+
+- **Root Directory**: `backend`
+- **Environment**: `Node`
+- **Build Command**: `npm install && npm run build` *(generates Prisma Client and compiles TypeScript)*
+- **Start Command**: `npm start` *(runs `node dist/server.js`)*
+- **Environment Variables**:
+  - `DATABASE_URL`: Your Neon PostgreSQL connection string
+  - `NODE_ENV`: `production`
+  - *(Note: Render automatically injects `PORT`. Fastify listens on `Number(process.env.PORT) || 5001` and binds to `0.0.0.0`)*
+
+### 2. Frontend (Static Site)
+
+- **Root Directory**: `frontend`
+- **Build Command**: `npm install && npm run build`
+- **Publish Directory**: `dist`
+- **Environment Variables**:
+  - `VITE_API_URL`: Your deployed backend service URL (e.g. `https://recruitment-api.onrender.com`)
+
+---
+
 ## 🧪 Automated Verification & Testing
 
 An automated verification test runner (`backend/src/test-runner.ts`) is included to verify all 8 requirements.

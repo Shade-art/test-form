@@ -37,29 +37,33 @@ server.get('/', async (_request, reply) => {
   });
 });
 
-let PORT = parseInt(process.env.PORT || '5001', 10);
-const HOST = '0.0.0.0';
+const port = Number(process.env.PORT) || 5001;
+const host = '0.0.0.0';
 
 const start = async () => {
   try {
-    await server.listen({ port: PORT, host: HOST });
-    server.log.info(`Server running at http://localhost:${PORT}`);
+    await server.listen({
+      port,
+      host,
+    });
+    server.log.info(`Server running at http://${host}:${port}`);
   } catch (err: any) {
-    if (err.code === 'EADDRINUSE') {
-      const fallbackPort = PORT === 5000 ? 5001 : PORT + 1;
-      server.log.warn(`Port ${PORT} is in use (often used by macOS AirPlay Receiver). Retrying on port ${fallbackPort}...`);
-      PORT = fallbackPort;
+    if (process.env.NODE_ENV !== 'production' && err.code === 'EADDRINUSE') {
+      const fallbackPort = port === 5000 ? 5001 : port + 1;
+      server.log.warn(
+        `Port ${port} is in use (often used by macOS AirPlay Receiver). Retrying on port ${fallbackPort}...`
+      );
       try {
-        await server.listen({ port: PORT, host: HOST });
-        server.log.info(`Server running at http://localhost:${PORT}`);
+        await server.listen({ port: fallbackPort, host });
+        server.log.info(`Server running at http://${host}:${fallbackPort}`);
+        return;
       } catch (retryErr) {
         server.log.error(retryErr);
         process.exit(1);
       }
-    } else {
-      server.log.error(err);
-      process.exit(1);
     }
+    server.log.error(err);
+    process.exit(1);
   }
 };
 
